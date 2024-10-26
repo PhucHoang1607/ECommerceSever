@@ -20,6 +20,7 @@ const userSchema = Schema({
     isAdmin: { type: Boolean, default: false },
     resetPasswordOTP: Number,
     resetPasswordOTPExpires: Date,
+    cart: [{ type: Schema.Types.ObjectId, ref: "CartProduct" }],
     wishlists: [
         {
             productId: { type: Schema.Types.ObjectId, ref: 'Product', require: true },
@@ -34,6 +35,8 @@ const userSchema = Schema({
 });
 
 userSchema.index({ email: 1 }, { unique: true });
+userSchema.set('toObject', { virtuals: true });
+userSchema.set('toJSON', { virtuals: true });
 
 exports.User = model('User', userSchema);
 
