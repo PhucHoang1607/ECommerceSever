@@ -1,8 +1,8 @@
-const { User } = require('../models/user');
-const { Order } = require('../models/order');
-const { OrderItem } = require('../models/order_items');
-const { CartProduct } = require('../models/cart_product');
-const { Token } = require('../models/token');
+const { User } = require('../../models/user');
+const { Order } = require('../../models/order');
+const { OrderItem } = require('../../models/order_items');
+const { CartProduct } = require('../../models/cart_product');
+const { Token } = require('../../models/token');
 
 exports.getUserCount = async (_, res) => {
     try {

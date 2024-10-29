@@ -2,7 +2,7 @@ const { Schema, model } = require('mongoose');
 
 const orderSchema = Schema({
     orderItems: [{
-        type: Schema.Types.ObjectId, ref: 'Orderitem', require: true
+        type: Schema.Types.ObjectId, ref: 'OrderItem', require: true
     }],
     shippingAdress: { type: String, require: true },
     phone: { type: String, require: true },

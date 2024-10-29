@@ -25,13 +25,10 @@ const userRouter = require('./routes/users');
 const adminRouter = require('./routes/admin');
 
 
-
 app.use(`${API}/`, authRouter);
 app.use(`${API}/users`, userRouter);
 app.use(`${API}/admin`, adminRouter);
-app.use(`/public`, express.static(__dirname + "/public"));
-
-
+app.use(`/public`, express.static(__dirname + '/public'));
 
 
 

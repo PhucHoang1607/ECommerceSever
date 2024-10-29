@@ -19,4 +19,4 @@ const cartProductSchema = Schema({
 cartProductSchema.set('toObject', { virtuals: true });
 cartProductSchema.set('toJSON', { virtuals: true });
 
-exports.CartProduct = model('CartProduct'.cartProductSchema);
+exports.CartProduct = model('CartProduct', cartProductSchema);
