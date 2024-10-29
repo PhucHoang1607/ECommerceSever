@@ -37,6 +37,7 @@ app.use(`/public`, express.static(__dirname + '/public'));
 //Start the server
 const hostname = env.HOST;
 const port = env.PORT;
+require('./helper/cron_job');
 
 mongoose.connect(env.MONGODB_CONNECTION_STRING).then(() => {
     console.log('Connected to Database');

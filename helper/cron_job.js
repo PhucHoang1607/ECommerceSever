@@ -1,4 +1,6 @@
 const cron = require('node-cron');
+const { Category } = require('../models/category')
+const { Product } = require('../models/product');
 
 
 cron.schedule('0 0 * * *', async function () {
