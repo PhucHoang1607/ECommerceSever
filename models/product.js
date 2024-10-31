@@ -11,11 +11,11 @@ const productSchema = Schema({
     category: { type: Schema.Types.ObjectId, ref: 'Category', require: true },
     genderAgecategory: { type: String, enum: ['men', 'woman', 'kids', 'modern'] },
     dateAdded: { type: Date, default: Date.now() },
-
+    countInStock: { type: Number, require: true, min: 0, max: 255 },
     // rating: { type: Number, default: 0.0 },
     // reviews: [{ type: Schema.Types.ObjectId, ref: "Review" }],
     // numberOfReviews: { type: Number, default: 0 },
-    // countInStock: [{ type: Number, require: true, min: 0, max: 255 }]
+
 });
 //pre-save hook
 // productSchema.pre('save', async function (next) {

@@ -13,7 +13,7 @@ const cartProductSchema = Schema({
         type: Date,
         default: () => new Date(Date.now() + 30 * 60 * 1000),
     },
-    // reserved: { type: Boolean, default: true }
+    reserved: { type: Boolean, default: true }
 });
 
 cartProductSchema.set('toObject', { virtuals: true });
