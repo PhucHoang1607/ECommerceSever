@@ -4,12 +4,12 @@ exports.getUsers = async (_, res) => {
     try {
         const users = await User.find().select('name email id isAdmin');
         if (!users) {
-            return res.staus(404).json({ message: 'User not found' });
+            return res.status(404).json({ message: 'User not found' });
         }
         return res.json(users);
     } catch (error) {
         console.error(error);
-        return res.staus(500).json({ type: error.name, message: error.message });
+        return res.status(500).json({ type: error.name, message: error.message });
     }
 }
 
@@ -24,7 +24,7 @@ exports.getUserById = async (req, res) => {
         return res.json(user);
     } catch (error) {
         console.error(error);
-        return res.staus(500).json({ type: error.name, message: error.message });
+        return res.status(500).json({ type: error.name, message: error.message });
     }
 }
 
@@ -44,6 +44,6 @@ exports.updateUser = async (req, res) => {
         return res.json(user);
     } catch (error) {
         console.error(error);
-        return res.staus(500).json({ type: error.name, message: error.message });
+        return res.status(500).json({ type: error.name, message: error.message });
     }
 }

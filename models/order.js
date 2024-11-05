@@ -41,7 +41,7 @@ const orderSchema = Schema({
     user: { type: Schema.Types.ObjectId, ref: "User" },
     dateOrdered: { type: Date, default: Date.now() },
 
-    // postalCode: String,
+    postalCode: String,
 
 
 

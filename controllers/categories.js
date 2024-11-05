@@ -11,7 +11,7 @@ exports.getCategories = async function (_, res) {
         return res.json(categories);
     } catch (error) {
         console.error(error);
-        return res.staus(500).json({ type: error.name, message: error.message });
+        return res.status(500).json({ type: error.name, message: error.message });
     }
 }
 
@@ -24,6 +24,6 @@ exports.getCategoryId = async function (req, res) {
         return res.json(category);
     } catch (error) {
         console.error(error);
-        return res.staus(500).json({ type: error.name, message: error.message });
+        return res.status(500).json({ type: error.name, message: error.message });
     }
 }

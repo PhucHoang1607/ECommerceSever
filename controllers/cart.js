@@ -54,7 +54,7 @@ exports.getUserCart = async function (req, res) {
 
     } catch (error) {
         console.error(error);
-        return res.staus(500).json({ type: error.name, message: error.message });
+        return res.status(500).json({ type: error.name, message: error.message });
     }
 }
 
@@ -67,7 +67,7 @@ exports.getUserCartCount = async function (req, res) {
         return res.json(user.cart.length);
     } catch (error) {
         console.error(error);
-        return res.staus(500).json({ type: error.name, message: error.message });
+        return res.status(500).json({ type: error.name, message: error.message });
     }
 }
 
@@ -99,14 +99,14 @@ exports.getCartProductById = async function (req, res) {
         return res.json(cartProduct);
     } catch (error) {
         console.error(error);
-        return res.staus(500).json({ type: error.name, message: error.message });
+        return res.status(500).json({ type: error.name, message: error.message });
     }
 }
 
 
 exports.addToCart = async function (req, res) {
     const session = await mongoose.startSession();
-    session.startSession();
+    session.startTransaction();
     try {
         const { productId } = req.body;
         const user = await User.findById(req.params.id);
@@ -126,12 +126,12 @@ exports.addToCart = async function (req, res) {
 
         const product = await Product.findById(productId).session(session);
         if (!product) {
-            await abortTransaction();
+            await session.abortTransaction();
             return res.status(404).json({ message: "Product not found" });
         }
 
         if (existingCartItem) {
-            let condition = product.countInStock >= existingCartItem + 1;
+            let condition = product.countInStock >= existingCartItem.quantity + 1;
             if (existingCartItem.reserved) {
                 condition = product.countInStock >= 1;
             }
@@ -151,13 +151,13 @@ exports.addToCart = async function (req, res) {
             return res.status(400).json({ message: "Out of stock" });
         }
 
-        const { quantity, selectedSize, selectedColor } = req.body;
+        const { quantity, selectedSize, selectedColour } = req.body;
 
         const cartProduct = await new CartProduct({
             ...req.body,
             quantity,
             selectedSize,
-            selectedColor,
+            selectedColour,
             product: productId,
             productName: product.name,
             productImage: product.image,
@@ -192,7 +192,7 @@ exports.addToCart = async function (req, res) {
     } catch (error) {
         console.error(error);
         await session.abortTransaction();
-        return res.staus(500).json({ type: error.name, message: error.message });
+        return res.status(500).json({ type: error.name, message: error.message });
     } finally {
         await session.endSession();
     }
@@ -223,23 +223,25 @@ exports.modifiedProductQuantity = async function (req, res) {
 
         cartProduct = await CartProduct.findByIdAndUpdate(
             req.params.cartProductId,
-            quantity,
-            { new: true });
+            { quantity },
+            { new: true }
+        );
 
         if (!cartProduct) {
-            return res.status(404).json({ message: "Product not founbd" });
+            return res.status(404).json({ message: "Product not found" });
         }
+
         return res.json(cartProduct);
     } catch (error) {
         console.error(error);
-        return res.staus(500).json({ type: error.name, message: error.message });
+        return res.status(500).json({ type: error.name, message: error.message });
     }
 }
 
 
 exports.removeFromCart = async function (req, res) {
     const session = await mongoose.startSession();
-    session.startSession();
+    session.startTransaction();
     try {
         const user = await User.findById(req.params.id);
         if (!user) {
@@ -253,6 +255,7 @@ exports.removeFromCart = async function (req, res) {
         }
 
         const cartItemToRemove = await CartProduct.findById(req.params.cartProductId);
+
         if (!cartItemToRemove) {
             await session.abortTransaction();
             return res.status(404).json({ message: 'Cart item not found' });
@@ -260,7 +263,7 @@ exports.removeFromCart = async function (req, res) {
 
         if (cartItemToRemove.reserved) {
             const updatedProduct = await Product.findOneAndUpdate(
-                { _id: cartItemToRemove, },
+                { _id: cartItemToRemove.product, },
                 { $inc: { countInStock: cartItemToRemove.quantity } },
                 { new: true, session }
             );
@@ -286,16 +289,16 @@ exports.removeFromCart = async function (req, res) {
 
     } catch (error) {
         console.error(error);
-        return res.staus(500).json({ type: error.name, message: error.message });
+        return res.status(500).json({ type: error.name, message: error.message });
     }
 }
 
 
-exports.getUserCart = async function (req, res) {
-    try {
+// exports.getUserCart = async function (req, res) {
+//     try {
 
-    } catch (error) {
-        console.error(error);
-        return res.staus(500).json({ type: error.name, message: error.message });
-    }
-}
+//     } catch (error) {
+//         console.error(error);
+//         return res.status(500).json({ type: error.name, message: error.message });
+//     }
+// }

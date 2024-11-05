@@ -11,9 +11,9 @@ router.get('/:id', userController.getUserById);
 router.put('/:id', userController.updateUser);
 
 //wishlist
-router.get('/:id/wishlist', wishlistController.getUserWishList);
-router.post('/:id/whishlist', wishlistController.addToWishList);
-router.delete('/:id/whishlist', wishlistController.removeFromWishList);
+router.get('/:id/wishlists', wishlistController.getUserWishList);
+router.post('/:id/wishlists', wishlistController.addToWishList);
+router.delete('/:id/wishlists', wishlistController.removeFromWishList);
 
 
 //cart

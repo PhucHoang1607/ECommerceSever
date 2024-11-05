@@ -4,7 +4,7 @@ const cartProductSchema = Schema({
     product: { type: Schema.Types.ObjectId, ref: "Product", require: true, },
     quantity: { type: Number, default: 1 },
     selectedSize: String,
-    selectedColor: String,
+    selectedColour: String,
     productName: { type: String, require: true },
     productImage: { type: String, require: true },
     productPrice: { type: Number, require: true },

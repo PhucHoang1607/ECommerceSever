@@ -10,7 +10,7 @@ exports.getUserWishList = async function (req, res) {
         }
 
         const wishlists = [];
-        for (const wishProduct of user.wishList) {
+        for (const wishProduct of user.wishlists) {
             const product = await Product.findById(wishlists.productId);
             // productExists: 
             if (!product) {
@@ -41,7 +41,7 @@ exports.getUserWishList = async function (req, res) {
         return res.json(wishlists);
     } catch (error) {
         console.error(error);
-        return res.staus(500).json({ type: error.name, message: error.message });
+        return res.status(500).json({ type: error.name, message: error.message });
     }
 }
 
@@ -79,7 +79,7 @@ exports.addToWishList = async function (req, res) {
         return res.status(200).end();
     } catch (error) {
         console.error(error);
-        return res.staus(500).json({ type: error.name, message: error.message });
+        return res.status(500).json({ type: error.name, message: error.message });
     }
 }
 
@@ -110,6 +110,6 @@ exports.removeFromWishList = async function (req, res) {
         return res.status(204).end();
     } catch (error) {
         console.error(error);
-        return res.staus(500).json({ type: error.name, message: error.message });
+        return res.status(500).json({ type: error.name, message: error.message });
     }
 }

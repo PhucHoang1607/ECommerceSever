@@ -1,6 +1,6 @@
 const { Product } = require('../models/product');
 
-exports.getProducts = async function (_, res) {
+exports.getProducts = async function (req, res) {
     try {
         let products;
         const page = req.query.page || 1;
@@ -47,7 +47,7 @@ exports.getProducts = async function (_, res) {
         return res.json(products);
     } catch (error) {
         console.error(error);
-        return res.staus(500).json({ type: error.name, message: error.message });
+        return res.status(500).json({ type: error.name, message: error.message });
     }
 }
 
@@ -92,7 +92,7 @@ exports.searchProduct = async function (req, res) {
         return res.json(searchResults);
     } catch (error) {
         console.error(error);
-        return res.staus(500).json({ type: error.name, message: error.message });
+        return res.status(500).json({ type: error.name, message: error.message });
     }
 }
 
@@ -106,6 +106,6 @@ exports.getProductById = async function (req, res) {
         return res.json(product);
     } catch (error) {
         console.error(error);
-        return res.staus(500).json({ type: error.name, message: error.message });
+        return res.status(500).json({ type: error.name, message: error.message });
     }
 }

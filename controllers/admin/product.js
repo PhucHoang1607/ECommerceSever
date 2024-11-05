@@ -93,11 +93,11 @@ exports.addProduct = async function (req, res) {
                 .json({ message: "The product could not be created" });
         }
 
-        return res.staus(201).json({ product });
+        return res.status(201).json({ product });
     } catch (error) {
         console.error(error);
         if (err instanceof multer.MulterError) {
-            return res.staus(err.code).json({ message: err.message });
+            return res.status(err.code).json({ message: err.message });
         }
         return res.status(500).json({ type: error.name, message: error.message });
     }
@@ -187,7 +187,7 @@ exports.editProduct = async function (req, res) {
     } catch (error) {
         console.error(error);
         if (err instanceof multer.MulterError) {
-            return res.staus(err.code).json({ message: err.message });
+            return res.status(err.code).json({ message: err.message });
         }
         return res.status(500).json({ type: error.name, message: error.message });
     }
@@ -217,9 +217,9 @@ exports.deleteProductImages = async function (req, res) {
     } catch (error) {
         console.error(`Error deleting product: ${error.message}`);
         if (error.code === 'ENOENT') {
-            return res.staus(404).json({ message: 'Image not found' });
+            return res.status(404).json({ message: 'Image not found' });
         }
-        return res.staus(500).json({ message: error.message });
+        return res.status(500).json({ message: error.message });
     }
 }
 
@@ -227,7 +227,7 @@ exports.deleteProduct = async function (req, res) {
     try {
         const productId = req.params.id;
         if (!mongoose.isValidObjectId(productId)) {
-            return res.staus(404).json('Invalid Product');
+            return res.status(404).json('Invalid Product');
         }
         const product = await Product.findById(productId);
         if (!product) {

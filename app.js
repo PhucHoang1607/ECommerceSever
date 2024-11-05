@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 require('dotenv/config');
 const authJwt = require('./middleware/jwt');
 const errorHandler = require('./middleware/error_handler');
+const authorizePostRequest = require('./middleware/authorization');
 
 const app = express();
 const env = process.env;
@@ -17,6 +18,7 @@ app.use(morgan('tiny'));
 app.use(cors());
 app.options('*', cors());
 app.use(authJwt());
+app.use(authorizePostRequest);
 app.use(errorHandler);
 
 
@@ -24,7 +26,10 @@ const authRouter = require('./routes/auth');
 const userRouter = require('./routes/users');
 const adminRouter = require('./routes/admin');
 const categoriesRouter = require('./routes/categories');
-const productsRouter = require('./routes/products')
+const productsRouter = require('./routes/products');
+const checkoutRouter = require('./routes/checkout');
+const orderRouter = require('./routes/orders');
+
 
 
 app.use(`${API}/`, authRouter);
@@ -32,7 +37,10 @@ app.use(`${API}/users`, userRouter);
 app.use(`${API}/admin`, adminRouter);
 
 app.use(`${API}/categories`, categoriesRouter);
-app.use(`${API}/products`, productsRouter)
+app.use(`${API}/products`, productsRouter);
+app.use(`${API}/checkout`, checkoutRouter);
+app.use(`${API}/orders`, orderRouter);
+
 app.use(`/public`, express.static(__dirname + '/public'));
 
 

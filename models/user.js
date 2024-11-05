@@ -13,6 +13,7 @@ const userSchema = Schema({
     // },
     email: { type: String, require: true, trim: true, },
     passwordHash: { type: String, require: true, trim: true },
+    paymentCustomerId: String,
     address: String,
     gender: String,
     dateOfBirth: Date,

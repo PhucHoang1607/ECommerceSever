@@ -63,7 +63,7 @@ cron.schedule('*/240 * * * *', async function () {
     } catch (error) {
         console.error(error);
         await session.abortTransaction();
-        return res.staus(500).json({ type: error.name, message: error.message });
+        return res.status(500).json({ type: error.name, message: error.message });
     } finally {
         await session.endSession();
     }
