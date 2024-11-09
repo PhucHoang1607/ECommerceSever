@@ -33,9 +33,9 @@ const orderRouter = require('./routes/orders');
 
 
 app.use(`${API}/`, authRouter);
-app.use(`${API}/users`, userRouter);
 app.use(`${API}/admin`, adminRouter);
 
+app.use(`${API}/users`, userRouter);
 app.use(`${API}/categories`, categoriesRouter);
 app.use(`${API}/products`, productsRouter);
 app.use(`${API}/checkout`, checkoutRouter);

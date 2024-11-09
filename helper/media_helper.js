@@ -6,7 +6,10 @@ const path = require('path');
 const ALLOWED_EXTENSION = {
     'image/jpeg': 'jpeg',
     'image/png': 'png',
-    'image/jpg': 'jpg'
+    'image/jpg': 'jpg',
+    'application/octet-stream': 'jpg',
+    'application/octet-stream': 'png',
+    'application/octet-stream': 'jpg',
 };
 
 
@@ -14,7 +17,7 @@ const ALLOWED_EXTENSION = {
 const storage = multer.diskStorage({
     //where the uploaded images will be saved.
     destination: function (_, _, cb) {
-        cb(null, 'public/uploads');
+        cb(null, 'public/uploads/');
     },
     //Generates a unique filename for each uploaded image by taking 
     //the original filename, replacing spaces, and stripping the extension. 
@@ -24,9 +27,12 @@ const storage = multer.diskStorage({
             .replace(' ', '-')
             .replace('.png', '')
             .replace('.jpg', '')
-            .replace('.jpeg', '');
-        const extension = ALLOWED_EXTENSION[file.mimetype];
-        cb(null, `${filename} - ${Date.now()}.${extension}`)
+            .replace('.jpeg', '')
+            .replace(/\s/g, '-')  // Thay thế khoảng trắng bằng dấu gạch ngang
+            .replace(/\.(png|jpg|jpeg)$/i, ''); // Loại bỏ phần mở rộng;
+        const extension = ALLOWED_EXTENSION[file.mimetype] || 'jpg';
+        cb(null, `${filename}-${Date.now()}.${extension}`)
+
 
     }
 

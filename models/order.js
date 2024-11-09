@@ -23,7 +23,7 @@ const orderSchema = Schema({
         ],
     },
     statusHistory: {
-        type: [String],
+        type: [{ type: String }],
         enum: [
             'pending',
             'processed',

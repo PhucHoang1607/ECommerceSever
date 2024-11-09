@@ -4,6 +4,32 @@ const { OrderItem } = require('../../models/order_items');
 const { CartProduct } = require('../../models/cart_product');
 const { Token } = require('../../models/token');
 
+exports.getAllUsers = async function (_, res) {
+    try {
+        const users = await User.find();
+        if (!users) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        return res.json(users);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ type: error.name, message: error.message });
+    }
+}
+
+exports.getUserById = async function (req, res) {
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        return res.json(user);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ type: error.name, message: error.message });
+    }
+}
+
 exports.getUserCount = async (_, res) => {
     try {
         const userCount = await User.countDocuments();
