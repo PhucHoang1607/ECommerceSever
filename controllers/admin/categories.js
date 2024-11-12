@@ -152,10 +152,10 @@ exports.addCategory = async (req, res) => {
 
 exports.editCategory = async (req, res) => {
     try {
-        const { name, color, icon } = req.body;
+        const { name, color, image } = req.body;
         const category = await Category.findByIdAndUpdate(
             req.params.id,
-            { name, icon, color },
+            { name, image, color },
             { new: true }
         );
         if (!category) {

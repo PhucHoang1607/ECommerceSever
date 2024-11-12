@@ -9,7 +9,7 @@ exports.getProducts = async function (req, res) {
     try {
         const page = req.query.page || 1;
 
-        const pageSize = 10;
+        const pageSize = 30;
 
         const products = await Product.find()
             .select()
@@ -41,18 +41,71 @@ exports.getProductCount = async function (req, res) {
 }
 
 
-exports.getProductById = async function (req, res) {
-    try {
-        const product = await Product.findById(req.params.id);
-        if (!product) {
-            return res.status(404).json({ message: 'Product not found' });
-        }
-        return res.json(product);
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ type: error.name, message: error.message });
-    }
-}
+
+
+// exports.addProduct = async function (req, res) {
+
+//     try {
+//         const uploadImage = util.promisify(
+//             media_helper.upload.fields([
+//                 { name: 'image', maxCount: 1 },
+//                 { name: 'imageDetail', maxCount: 10 },
+//             ])
+//         );
+//         try {
+//             await uploadImage(req, res);
+//         } catch (error) {
+//             console.error(error);
+//             return res.status(500).json({
+//                 type: error.code,
+//                 message: `${error.message}{${err.field}}`,
+//                 storageError: error.storageError
+//             });
+//         }
+
+//         const category = Category.findById(req.body.category);
+//         if (!category) return res.status(404).json({ message: "Invalid Category" });
+
+//         if (category.markedForDeletion) {
+//             return res.status(404).json({
+//                 message:
+//                     'Category marked for deletion, you cannot add products to this category'
+//             });
+//         }
+
+//         const image = req.files['image'][0];
+//         if (!image) return res.status(404).json({ message: 'No file found' });
+
+//         req.body['image'] = `${req.protocol}://${req.get('host')}/${image.path}`;
+
+//         const gallery = req.files['imageDetail'];
+//         const imagePaths = [];
+//         if (gallery) {
+//             for (const image of gallery) {
+//                 const imagePath = `${req.protocol}://${req.get('host')}/${image.path}`;
+//                 imagePaths.push(imagePath);
+//             }
+//         }
+//         if (imagePaths.length > 0) {
+//             req.body['imageDetail'] = imagePaths;
+//         }
+
+//         const product = new Product(req.body).save();
+//         if (!product) {
+//             return res
+//                 .status(500)
+//                 .json({ message: "The product could not be created" });
+//         }
+
+//         return res.status(201).json({ product });
+//     } catch (error) {
+//         console.error(error);
+//         if (err instanceof multer.MulterError) {
+//             return res.status(err.code).json({ message: err.message });
+//         }
+//         return res.status(500).json({ type: error.name, message: error.message });
+//     }
+// }
 
 exports.addProduct = async function (req, res) {
     try {
@@ -62,60 +115,59 @@ exports.addProduct = async function (req, res) {
                 { name: 'imageDetail', maxCount: 10 },
             ])
         );
+
         try {
             await uploadImage(req, res);
         } catch (error) {
             console.error(error);
             return res.status(500).json({
                 type: error.code,
-                message: `${error.message}{${err.field}}`,
+                message: `${error.message}{${error.field}}`,
                 storageError: error.storageError
             });
         }
 
-        const category = Category.findById(req.body.category);
+        const category = await Category.findById(req.body.category);
         if (!category) return res.status(404).json({ message: "Invalid Category" });
-
         if (category.markedForDeletion) {
             return res.status(404).json({
-                message:
-                    'Category marked for deletion, you cannot add products to this category'
+                message: 'Category marked for deletion, you cannot add products to this category'
             });
         }
 
-        const image = req.files['image'][0];
-        if (!image) return res.status(404).json({ message: 'No file found' });
+        // Check if 'image' is provided as a file or URL
+        let imagePath;
+        if (req.files && req.files['image'] && req.files['image'][0]) {
+            imagePath = `${req.protocol}://${req.get('host')}/${req.files['image'][0].path}`;
+        } else if (req.body.image) {
+            imagePath = req.body.image; // Assume it's a URL
+        }// } else {
+        //     return res.status(404).json({ message: 'No image provided' });
+        // }
+        req.body['image'] = imagePath;
 
-        req.body['image'] = `${req.protocol}://${req.get('host')}/${image.path}`;
-
-        const gallery = req.files['imageDetail'];
-        const imagePaths = [];
-        if (gallery) {
-            for (const image of gallery) {
-                const imagePath = `${req.protocol}://${req.get('host')}/${image.path}`;
-                imagePaths.push(imagePath);
-            }
+        // Handle 'imageDetail' similarly, either as files or URLs
+        let imagePaths = [];
+        if (req.files && req.files['imageDetail']) {
+            imagePaths = req.files['imageDetail'].map(file => `${req.protocol}://${req.get('host')}/${file.path}`);
+        } else if (req.body.imageDetail) {
+            imagePaths = Array.isArray(req.body.imageDetail) ? req.body.imageDetail : [req.body.imageDetail];
         }
-        if (imagePaths.length > 0) {
-            req.body['imageDetail'] = imagePaths;
-        }
+        req.body['imageDetail'] = imagePaths;
 
-        const product = new Product(req.body).save();
+        const product = await new Product(req.body).save();
         if (!product) {
-            return res
-                .status(500)
-                .json({ message: "The product could not be created" });
+            return res.status(500).json({ message: "The product could not be created" });
         }
+
 
         return res.status(201).json({ product });
     } catch (error) {
         console.error(error);
-        if (err instanceof multer.MulterError) {
-            return res.status(err.code).json({ message: err.message });
-        }
         return res.status(500).json({ type: error.name, message: error.message });
     }
-}
+};
+
 
 exports.editProduct = async function (req, res) {
     try {
@@ -247,7 +299,12 @@ exports.deleteProduct = async function (req, res) {
         if (!product) {
             return res.status(404).json({ message: 'Product not found' });
         }
-        await media_helper.deleteImages([...product.imageDetail, ...product.image],);
+
+        const imageDetails = Array.isArray(product.imageDetail) ? product.imageDetail : [];
+        const images = Array.isArray(product.image) ? product.image : (product.image ? [product.image] : []);
+
+        await media_helper.deleteImages([...imageDetails, ...images]);
+        //await media_helper.deleteImages([...product.imageDetail, ...product.image],);
 
         await Product.findByIdAndDelete(productId);
 

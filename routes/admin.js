@@ -23,7 +23,6 @@ router.delete('/categories/:id', categoryAdController.deleteCategory);
 //PRODUCTS
 router.get('/products', productAdController.getProducts);
 router.get('/products/count', productAdController.getProductCount);
-router.get('/products/:id', productAdController.getProductById);
 router.post('/products', productAdController.addProduct);
 router.put('/products/:id', productAdController.editProduct);
 router.delete('/products/:id/images', productAdController.deleteProductImages);
