@@ -2,42 +2,80 @@ const { User } = require('../models/user');
 const { Product } = require('../models/product');
 const { default: mongoose } = require('mongoose');
 
+// exports.getUserWishList = async function (req, res) {
+//     try {
+//         const user = await User.findById(req.params.id).populate('wishlists.productId');
+//         if (!user) {
+//             return res.status(404).json({ message: 'User not found' });
+//         }
+
+//         const wishlists = [];
+//         for (const wishProduct of user.wishlists) {
+//             const product = await Product.findById(wishProduct.productId);
+//             // productExists: 
+//             if (!product) {
+//                 wishlists.push({
+//                     ...wishProduct,
+//                     productExists: false,
+//                     productOutOfStock: false,
+//                 });
+//             }
+//             else if (product.countInStock < 1) {
+//                 wishlists.push({
+//                     ...wishProduct,
+//                     productExists: true,
+//                     productOutOfStock: true,
+//                 });
+//             }
+//             else {
+//                 wishlists.push({
+//                     productId: product._id,
+//                     productName: product.name,
+//                     productImage: product.image,
+//                     productPrice: product.price,
+//                     productExists: true,
+//                     productOutOfStock: false,
+//                 });
+//             }
+//         }
+//         return res.json(wishlists);
+//     } catch (error) {
+//         console.error(error);
+//         return res.status(500).json({ type: error.name, message: error.message });
+//     }
+// }
 exports.getUserWishList = async function (req, res) {
     try {
-        const user = await User.findById(req.params.id);
+        const user = await User.findById(req.params.id).populate('wishlists.productId');
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        const wishlists = [];
-        for (const wishProduct of user.wishlists) {
-            const product = await Product.findById(wishlists.productId);
-            // productExists: 
+        const wishlists = await Promise.all(user.wishlists.map(async (wishProduct) => {
+            const product = await Product.findById(wishProduct.productId);
             if (!product) {
-                wishlists.push({
+                return {
                     ...wishProduct,
                     productExists: false,
-                    productOutOfStockL: false,
-                });
-            }
-            else if (product.countInStock < 1) {
-                wishlists.push({
+                    productOutOfStock: false,
+                };
+            } else if (product.countInStock < 1) {
+                return {
                     ...wishProduct,
                     productExists: true,
                     productOutOfStock: true,
-                });
-            }
-            else {
-                wishlists.push({
+                };
+            } else {
+                return {
                     productId: product._id,
                     productName: product.name,
                     productImage: product.image,
                     productPrice: product.price,
                     productExists: true,
                     productOutOfStock: false,
-                });
+                };
             }
-        }
+        }));
         return res.json(wishlists);
     } catch (error) {
         console.error(error);

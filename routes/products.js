@@ -4,8 +4,10 @@ const productsController = require('../controllers/products');
 
 
 router.get('/', productsController.getProducts);
+router.get('/limitproducts', productsController.get4Products)
 router.get('/search', productsController.searchProduct);
 router.get('/:id', productsController.getProductById);
+
 
 
 
