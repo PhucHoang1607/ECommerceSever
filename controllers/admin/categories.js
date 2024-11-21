@@ -87,7 +87,7 @@ exports.addCategory = async (req, res) => {
         let imagePath;
 
         // Kiểm tra nếu người dùng gửi URL ảnh (http URL)
-        if (req.body.image && req.body.image.startsWith('http')) {
+        if (req.body.image) {
             imagePath = req.body.image; // Sử dụng URL ảnh
         }
         // Kiểm tra nếu người dùng gửi file ảnh qua form-data
@@ -115,8 +115,8 @@ exports.addCategory = async (req, res) => {
                     storageError: error.storageError
                 });
             }
-            const image = req.files['image'][0];
-            if (!image) return res.status(404).json({ message: "No file found" });
+            const image = req.files['image'];
+            if (!image || image.length === 0) return res.status(404).json({ message: "No file found" });
 
             // Sau khi ảnh được tải lên, lấy đường dẫn của ảnh
             imagePath = `${req.protocol}://${req.get('host')}/public/uploads/${image.filename}`;

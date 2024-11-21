@@ -141,7 +141,8 @@ exports.addProduct = async function (req, res) {
             imagePath = `${req.protocol}://${req.get('host')}/${req.files['image'][0].path}`;
         } else if (req.body.image) {
             imagePath = req.body.image; // Assume it's a URL
-        }// } else {
+        }
+        // } else {
         //     return res.status(404).json({ message: 'No image provided' });
         // }
         req.body['image'] = imagePath;
@@ -300,11 +301,11 @@ exports.deleteProduct = async function (req, res) {
             return res.status(404).json({ message: 'Product not found' });
         }
 
-        const imageDetails = Array.isArray(product.imageDetail) ? product.imageDetail : [];
-        const images = Array.isArray(product.image) ? product.image : (product.image ? [product.image] : []);
+        // const imageDetails = Array.isArray(product.imageDetail) ? product.imageDetail : [];
+        // const images = Array.isArray(product.image) ? product.image : (product.image ? [product.image] : []);
 
-        await media_helper.deleteImages([...imageDetails, ...images]);
-        //await media_helper.deleteImages([...product.imageDetail, ...product.image],);
+        // await media_helper.deleteImages([...imageDetails, ...images]);
+        // //await media_helper.deleteImages([...product.imageDetail, ...product.image],);
 
         await Product.findByIdAndDelete(productId);
 

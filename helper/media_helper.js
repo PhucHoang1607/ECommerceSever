@@ -8,8 +8,7 @@ const ALLOWED_EXTENSION = {
     'image/png': 'png',
     'image/jpg': 'jpg',
     'application/octet-stream': 'jpg',
-    'application/octet-stream': 'png',
-    'application/octet-stream': 'jpg',
+
 };
 
 

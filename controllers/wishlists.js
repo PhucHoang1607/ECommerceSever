@@ -132,10 +132,13 @@ exports.removeFromWishList = async function (req, res) {
             return res.status(404).json({ message: "User not found" });
         }
 
+        // const index = user.wishlists.findIndex(
+        //     (item) => item.productId.equals(
+        //         new mongoose.Schema.Types.ObjectId(productId)
+        //     )
+        // );
         const index = user.wishlists.findIndex(
-            (item) => item.productId.equals(
-                new mongoose.Schema.Types.ObjectId(productId)
-            )
+            (item) => item.productId.toString() === productId
         );
 
         if (index === -1) {

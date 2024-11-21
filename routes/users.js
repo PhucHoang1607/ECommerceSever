@@ -13,7 +13,7 @@ router.put('/:id', userController.updateUser);
 //wishlist
 router.get('/:id/wishlists', wishlistController.getUserWishList);
 router.post('/:id/wishlists', wishlistController.addToWishList);
-router.delete('/:id/wishlists', wishlistController.removeFromWishList);
+router.delete('/:id/wishlists/:productId', wishlistController.removeFromWishList);
 
 
 //cart
