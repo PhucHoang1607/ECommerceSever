@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const stripe = require('stripe')(process.env.STRIPE_KEY);
+const { default: mongoose } = require("mongoose");
 
 const { User } = require('../models/user');
 const { Product } = require('../models/product');
@@ -145,6 +146,7 @@ exports.webhook = function (req, res) {
                     totalPrice: session.amount_total / 100,
                     user: customer.metadata.userId,
                     paymentId: session.payment_intent,
+                    paymentMethod: 'By Card',
                 });
 
 
@@ -176,3 +178,79 @@ exports.webhook = function (req, res) {
     }
     res.send().end();
 };
+
+exports.checkoutCod = async function (req, res) {
+    const accessToken = req.header('Authorization').replace('Bearer', '').trim();
+    const tokenData = jwt.decode(accessToken);
+
+
+    try {
+        const isValidObjectId = mongoose.Types.ObjectId.isValid(tokenData.id);
+        if (!isValidObjectId) {
+            return res.status(400).json({ message: 'Invalid user ID' });
+        }
+        // Lấy thông tin user từ token
+        const user = await User.findById(tokenData.id);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+
+        let totalPrice = 0;
+        // Kiểm tra từng sản phẩm trong giỏ hàng
+        for (const cartItem of req.body.cartItem) {
+            const product = await Product.findById(cartItem.product);
+            if (!product) {
+                return res.status(404).json({ message: `${cartItem.name} not found` });
+            } else if (!cartItem.reserved && product.countInStock < cartItem.quantity) {
+                const message = `${product.name}\nOrder for ${cartItem.quantity}, but only ${product.countInStock} left in stock.`;
+                return res.status(400).json({ message });
+            }
+
+            totalPrice += (product.price * cartItem.quantity);
+        }
+
+
+
+        // Chuẩn bị thông tin orderItems
+
+        const orderItems = req.body.cartItem.map((item) => ({
+            quantity: item.quantity,
+            product: item.product,
+            cartProductId: item._id,
+            productPrice: item.productPrice,
+            productName: item.productName,
+            productImage: item.productImage,
+            selectedSize: item.selectedSize ?? undefined,
+            selectedColour: item.selectedColour ?? undefined,
+        }));
+
+        // Tạo order mới qua hàm addOrder
+        const order = await orderController.addOrder({
+            orderItems: orderItems,
+            shippingAddress: req.body.shippingAddress,
+            city: req.body.city,
+            postalCode: req.body.postalCode,
+            country: req.body.country,
+            phone: req.body.phone,
+            totalPrice: totalPrice,
+            user: tokenData.id,
+            paymentId: null, // Không có paymentId cho COD
+            paymentMethod: 'Cash on Delivery',
+        });
+
+        // Gửi phản hồi cho người dùng
+        if (order) {
+            res.status(201).json({
+                message: 'Order successfully created with COD.',
+                order,
+            });
+        } else {
+            res.status(500).json({ message: 'Failed to create order.' });
+        }
+    } catch (error) {
+        console.error('CHECKOUT COD ERROR: ', error.message);
+        res.status(500).json({ message: 'An error occurred during checkout.' });
+    }
+};
+

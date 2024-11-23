@@ -8,6 +8,7 @@ const orderSchema = Schema({
     phone: { type: String, require: true },
     country: { type: String, require: true },
     paymentId: String,
+    paymentMethod: String,
     status: {
         type: String,
         require: true,

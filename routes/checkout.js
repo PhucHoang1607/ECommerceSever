@@ -10,4 +10,6 @@ router.post(
     checkoutController.webhook
 );
 
+router.post('/checkout-cod', checkoutController.checkoutCod);
+
 module.exports = router;

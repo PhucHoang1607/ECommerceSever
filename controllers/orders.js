@@ -6,7 +6,7 @@ const { OrderItem } = require("../models/order_items");
 const { Order } = require("../models/order");
 
 exports.addOrder = async function (orderData) {
-    if (mongoose.isValidObjectId(orderData.user)) {
+    if (!mongoose.isValidObjectId(orderData.user)) {
         return console.error('User validation Failed: Invalid user');
     }
 
@@ -26,17 +26,24 @@ exports.addOrder = async function (orderData) {
             if (!mongoose.isValidObjectId(orderItem.product) ||
                 !(await Product.findById(orderItem.product))) {
                 await session.abortTransaction();
-                return console.trace('ORDER CREATION FAILED: Inalid product in the order')
+                console.log(`ORDER CREATION FAILED: Invalid product ID: ${orderItem.product}`);
+                return null//console.trace('ORDER CREATION FAILED: Invalid product in the order')
             }
 
             const product = await Product.findById(orderItem.product);
+            // const cartProduct = await CartProduct.findById(orderItem.cartProductId);
+            // if (!cartProduct) {
+
+            //     console.log(
+            //         `ORDER CREATION FAILED: Invalid cart product in the order: ${orderItem.product}`
+            //     );
+            //     return null;
+            // }
             const cartProduct = await CartProduct.findById(orderItem.cartProductId);
             if (!cartProduct) {
-                return console.trace(
-                    'ORDER CREATION FAILED: Inalid cart product in the order'
-                );
+                console.trace('ORDER CREATION FAILED: Invalid cart product in the order');
+                return null;
             }
-
             let orderItemModel = await new OrderItem(orderItem).save({ session });
 
 
